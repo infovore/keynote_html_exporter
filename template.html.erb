@@ -1,0 +1,16 @@
+<div class="presentation">
+<h1>Title of Presentation</h1>
+<em>Brief summary of presentation.</em>
+<div class="intro">
+  An introduction that does stretches full width can go here
+</div>
+
+<% @notes.each_with_index do |slide,index| %>
+
+<div class="slide"><img class="slide-image" src="slide-<%= index + 1 %>.jpg" alt="" /><!-- <h3>or heading</h3> -->
+<div class="content">
+  <%= slide %>
+</div>
+<span class="cleardiv"><!-- clear --></span></div>
+<% end %>
+</div>
