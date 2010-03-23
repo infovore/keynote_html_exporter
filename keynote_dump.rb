@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'rbosa'
@@ -30,11 +30,18 @@ def create_breaks_around(text)
   "<p>#{text.gsub(/\n/, "</p>\n\n<p>")}</p>"
 end
 
+def tidy(text)
+  text.gsub("<p></p>", "").gsub("\n\n\n", "\n")
+end
+
 app = OSA.app("Keynote")
 @notes = []
 
 app.slideshows.first.slides.each do |slide|
-  @notes << create_breaks_around(make_ascii(slide.notes))
+  output = make_ascii(slide.notes)
+  output = create_breaks_around(output)
+  output = tidy(output)
+  @notes << output
 end
 
 template = File.open("template.html.erb") {|f| f.read }
