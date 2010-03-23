@@ -27,8 +27,7 @@ def make_ascii(string)
 end
 
 def create_breaks_around(text)
-  text.gsub(/\n/, "</p>\n\n<p>")
-  "<p>#{text}</p>"
+  "<p>#{text.gsub(/\n/, "</p>\n\n<p>")}</p>"
 end
 
 app = OSA.app("Keynote")
