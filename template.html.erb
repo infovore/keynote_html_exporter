@@ -7,7 +7,7 @@
 
 <% @notes.each_with_index do |slide,index| %>
 
-<div class="slide"><img class="slide-image" src="slide-<%= index + 1 %>.jpg" alt="" /><!-- <h3>or heading</h3> -->
+<div class="slide"><img class="slide-image" src="<%= shortname %>/<%= shortname %>.<%= "%03d" % (index + 1) %>.jpg" alt="" /><!-- <h3>or heading</h3> -->
 <div class="content">
   <%= slide %>
 </div>

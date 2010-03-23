@@ -1,12 +1,8 @@
 #!/usr/bin/env ruby
-
 require 'rubygems'
 require 'rbosa'
 require 'erb'
-
 OSA.utf8_strings = true
-
-shortname = ""
 
 def make_ascii(string)
   string = string.gsub("\r", "\n")
@@ -34,20 +30,27 @@ def tidy(text)
   text.gsub("<p></p>", "").gsub("\n\n\n", "\n")
 end
 
-app = OSA.app("Keynote")
-@notes = []
 
-app.slideshows.first.slides.each do |slide|
-  output = make_ascii(slide.notes)
-  output = create_breaks_around(output)
-  output = tidy(output)
-  @notes << output
+shortname = ARGV[0]
+
+unless shortname
+  puts "Usage: keynote_dump.rb shortname_for_slides"
+else
+  app = OSA.app("Keynote")
+  @notes = []
+
+  app.slideshows.first.slides.each do |slide|
+    output = make_ascii(slide.notes)
+    output = create_breaks_around(output)
+    output = tidy(output)
+    @notes << output
+  end
+
+  template = File.open("template.html.erb") {|f| f.read }
+
+  output = ERB.new(template)
+
+  puts output.result
+  puts
+  puts "Now export all slides as images from Keynote to ./#{shortname}"
 end
-
-template = File.open("template.html.erb") {|f| f.read }
-
-output = ERB.new(template)
-
-puts output.result
-puts
-puts "Now export all slides as images from Keynote to ./slides"
