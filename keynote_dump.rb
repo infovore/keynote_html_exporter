@@ -1,7 +1,11 @@
 #!/usr/bin/env ruby
+STDOUT.sync = true
 require 'rubygems'
 require 'rbosa'
 require 'erb'
+require 'rmagick'
+include Magick
+
 OSA.utf8_strings = true
 
 def make_ascii(string)
@@ -36,6 +40,19 @@ shortname = ARGV[0]
 unless shortname
   puts "Usage: keynote_dump.rb shortname_for_slides"
 else
+  puts "Resizing all slides in #{shortname}/"
+  # it'd be nice to resize images
+  # convert -sample 300x225 input.jpg output.jpg
+  Dir.glob("#{shortname}/*.jpg") do |file|
+    # slide = Image.new(file)
+    # resized_slide = slide.scale(300,225)
+    # resized_slide.write file
+    ImageList.new(file).resize(300,225).write(file)
+    print "."
+  end
+  puts 
+
+  puts "Exporting notes from Keynote"
   app = OSA.app("Keynote")
   @notes = []
 
@@ -44,13 +61,15 @@ else
     output = create_breaks_around(output)
     output = tidy(output)
     @notes << output
+    print "."
   end
-
-  template = File.open("template.html.erb") {|f| f.read }
-
-  output = ERB.new(template)
-
-  puts output.result
   puts
-  puts "Now export all slides as images from Keynote to ./#{shortname}"
+  template = File.open("template.html.erb") {|f| f.read }
+  
+  output = ERB.new(template)
+  
+  File.open("#{shortname}/#{shortname}.html", "w") do |f|
+    f << output.result
+  end
+  
 end
