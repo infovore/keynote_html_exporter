@@ -41,12 +41,7 @@ unless shortname
   puts "Usage: keynote_dump.rb shortname_for_slides"
 else
   puts "Resizing all slides in #{shortname}/"
-  # it'd be nice to resize images
-  # convert -sample 300x225 input.jpg output.jpg
   Dir.glob("#{shortname}/*.jpg") do |file|
-    # slide = Image.new(file)
-    # resized_slide = slide.scale(300,225)
-    # resized_slide.write file
     ImageList.new(file).resize(300,225).write(file)
     print "."
   end
