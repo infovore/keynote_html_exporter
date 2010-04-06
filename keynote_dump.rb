@@ -60,10 +60,10 @@ else
   end
 
   puts "Exporting notes from Keynote"
-  app = OSA.app("Keynote")
+  keynote = OSA.app("Keynote")
   @notes = []
 
-  app.slideshows.first.slides.each do |slide|
+  keynote.slideshows.first.slides.each do |slide|
     output = make_ascii(slide.notes)
     output = create_breaks_around(output)
     output = tidy(output)
