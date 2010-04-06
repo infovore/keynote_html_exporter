@@ -1,0 +1,16 @@
+<div class="presentation">
+  <h1>Title of Presentation</h1>
+  <div class="intro">
+    You might introduce your presentation here.
+  </div>
+
+  <% @notes.each_with_index do |notes,index| %>
+  <div class="slide">
+    <img class="slide-image" src="<%= shortname %>.<%= "%03d" % (index + 1) %>.png" />
+    <div class="notes">
+      <%= notes %>
+    </div>
+  </div>
+  <% end %>
+
+</div>
