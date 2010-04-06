@@ -48,7 +48,7 @@ else
     if width && height
       puts "Resizing all slides in #{shortname}/"
       Dir.glob("#{shortname}/*.jpg") do |file|
-        ImageList.new(file).resize(300,225).write(file)
+        ImageList.new(file).resize(width,height).write(file)
         print "."
       end
       puts 
