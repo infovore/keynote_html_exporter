@@ -1,4 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby 
+
 STDOUT.sync = true
 require 'rubygems'
 require 'rbosa'
@@ -34,20 +35,21 @@ end
 
 
 shortname = ARGV[0]
-aspect_ratio = ARGV[1]
+template = ARGV[1]
+aspect_ratio = ARGV[2]
 
-unless shortname
-  puts "Usage: keynote_dump.rb shortname_for_slides [imagemagick_resize_ratio]"
+unless shortname && template
+  puts "Usage: keynote_dump.rb shortname_for_slides template_file [imagemagick_resize_ratio]"
   puts "Optional resize ratio should be of the format (eg) 300x225"
 else
   if aspect_ratio
     require 'rmagick'
     include Magick
-    width = aspect_ratio.split("x").first
-    height = aspect_ratio.split("x").last
+    width = aspect_ratio.split("x").first.to_i
+    height = aspect_ratio.split("x").last.to_i
     if width && height
       puts "Resizing all slides in #{shortname}/"
-      Dir.glob("#{shortname}/*.jpg") do |file|
+      Dir.glob("#{shortname}/*.png") do |file|
         ImageList.new(file).resize(width,height).write(file)
         print "."
       end
@@ -69,7 +71,7 @@ else
     print "."
   end
   puts
-  template = File.open("template.html.erb") {|f| f.read }
+  template = File.open(template) {|f| f.read }
   
   output = ERB.new(template)
   
