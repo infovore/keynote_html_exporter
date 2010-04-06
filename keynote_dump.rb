@@ -3,8 +3,6 @@ STDOUT.sync = true
 require 'rubygems'
 require 'rbosa'
 require 'erb'
-require 'rmagick'
-include Magick
 
 OSA.utf8_strings = true
 
@@ -36,16 +34,28 @@ end
 
 
 shortname = ARGV[0]
+aspect_ratio = ARGV[1]
 
 unless shortname
-  puts "Usage: keynote_dump.rb shortname_for_slides"
+  puts "Usage: keynote_dump.rb shortname_for_slides [imagemagick_resize_ratio]"
+  puts "Optional resize ratio should be of the format (eg) 300x225"
 else
-  puts "Resizing all slides in #{shortname}/"
-  Dir.glob("#{shortname}/*.jpg") do |file|
-    ImageList.new(file).resize(300,225).write(file)
-    print "."
+  if aspect_ratio
+    require 'rmagick'
+    include Magick
+    width = aspect_ratio.split("x").first
+    height = aspect_ratio.split("x").last
+    if width && height
+      puts "Resizing all slides in #{shortname}/"
+      Dir.glob("#{shortname}/*.jpg") do |file|
+        ImageList.new(file).resize(300,225).write(file)
+        print "."
+      end
+      puts 
+    else
+      puts "Invalid resizing format. Slides will not be resized"
+    end
   end
-  puts 
 
   puts "Exporting notes from Keynote"
   app = OSA.app("Keynote")
