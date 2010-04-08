@@ -1,7 +1,7 @@
 keynote_dump.rb
 ===============
 
-keynote_dump.rb is a script to quickly and dynamically export Keynote presentations to templated HTML. It exports one presentation to one page (at the moment).
+keynote_dump.rb is a script to quickly and dynamically export Keynote presentations - and, specifically, the notes on each slide - to templated HTML pages. It exports one presentation to one page (at the moment).
 
 Dependencies
 ------------
