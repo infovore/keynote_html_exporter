@@ -2,10 +2,9 @@
 
 STDOUT.sync = true
 require 'rubygems'
-require 'rbosa'
 require 'erb'
-
-OSA.utf8_strings = true
+require 'appscript'
+include Appscript
 
 def make_ascii(string)
   string = string.gsub("\r", "\n")
@@ -60,11 +59,11 @@ else
   end
 
   puts "Exporting notes from Keynote"
-  keynote = OSA.app("Keynote")
+  keynote = app("Keynote")
   @notes = []
 
-  keynote.slideshows.first.slides.each do |slide|
-    output = make_ascii(slide.notes)
+  keynote.slideshows.get.first.slides.get.each do |slide|
+    output = make_ascii(slide.notes.get)
     output = create_breaks_around(output)
     output = tidy(output)
     @notes << output
