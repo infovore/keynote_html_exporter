@@ -6,7 +6,7 @@ keynote_dump.rb is a script to quickly and dynamically export Keynote presentati
 Dependencies
 ------------
 
-keynote_dump.rb requires RubyOSA [http://rubyosa.rubyforge.org] to talk to Keynote, and uses ERB [http://ruby-doc.org/stdlib/libdoc/erb/rdoc/classes/ERB.html] for its templating.
+keynote_dump.rb requires rb-appscript [http://appscript.sourceforge.net/rb-appscript/index.html] to talk to Keynote, and uses ERB [http://ruby-doc.org/stdlib/libdoc/erb/rdoc/classes/ERB.html] for its templating.
 
 In addition, if you wish to dynamically resize slide images, you'll need ImageMagick and RMagick [http://rmagick.rubyforge.org] installed.
 
