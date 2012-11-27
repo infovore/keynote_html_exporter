@@ -6,7 +6,7 @@ keynote_dump.rb is a script to quickly and dynamically export Keynote presentati
 Dependencies
 ------------
 
-keynote_dump.rb requires rb-appscript [http://appscript.sourceforge.net/rb-appscript/index.html] to talk to Keynote, and uses ERB [http://ruby-doc.org/stdlib/libdoc/erb/rdoc/classes/ERB.html] for its templating.
+keynote_dump.rb requires rb-appscript [http://appscript.sourceforge.net/rb-appscript/index.html] to talk to Keynote, and uses Erubis [http://www.kuwata-lab.com/erubis/] for its templating.
 
 In addition, if you wish to dynamically resize slide images, you'll need ImageMagick and RMagick [http://rmagick.rubyforge.org] installed.
 
@@ -15,17 +15,19 @@ Usage
 
 From your commandline:
 
-keynote_dump.rb shortname_for_slides template_file [imagemagick_resize_ratio]
+keynote_dump.rb shortname_for_slides slide_template_file page_template_file [imagemagick_resize_ratio]
 
 ...which is a bit cryptic. It's best explained with a walkthrough.
 
 Firstly, to **just export the slides to an HTML template**
 
-1. Make sure you have a suitable ERB template for your presentation page in the keynote_dump.rb directory; use `sample-template.html.erb` as a guideline.
+1. Make sure you have a suitable ERB template for your presentation page in the keynote_dump.rb directory; use `sample-page-template.html.erb` as a guideline. This represents the whole page.
+1. Then, make a template for an _individual slide_. Use
+   `sample-slide-template.html.erb` as an example.
 2. Decided on a shortname for your presentation - for instance, "my_presentation"
 3. Make a directory inside your keynote_dump.rb directory called my_presentation
 4. Open Keynote, and make sure the presentation you wish to export is the only presentation open.
-5. Open terminal, navigate to your keynote_dump.rb directory, and run `ruby keynote_dump.rb my_presentation sample-template.html.erb` (or whatever your template file is called).
+5. Open terminal, navigate to your keynote_dump.rb directory, and run `ruby keynote_dump.rb my_presentation sample-slide-template.html.erb sample-page-template.html.erb` (or whatever your template files are called).
 6. When the script has completed, your presentation page will be at `my_presentation/my_presentation.html`
 
 **To export the slides and resize them**, the process is a little more complex:

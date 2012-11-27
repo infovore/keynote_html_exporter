@@ -2,42 +2,112 @@
 
 STDOUT.sync = true
 require 'rubygems'
-require 'erb'
+require 'erubis'
 require 'appscript'
-include Appscript
+require 'iconv'
 
-def make_ascii(string)
-  string = string.gsub("\r", "\n")
-  
-  string = string.gsub("\xe2\x80\x94", "--") # m dash
-  string = string.gsub("\xe2\x80\x98", "'")  # open single quote
-  string = string.gsub("\xe2\x80\x99", "'")  # close single quote
-  string = string.gsub("\xe2\x80\x9c", '"')  # open double quote
-  string = string.gsub("\xe2\x80\x9d", '"')  # close double quote
+class KeynoteProcessor
+  include Appscript
+  attr_reader :slides, :app
 
-  string = string.gsub("\xc3\xa1", "&#225;") # aacute
-  string = string.gsub("\xc3\x87", "&#199;") # Ccedil
-  string = string.gsub("\xc3\xb6", "&#246;") # ouml
-  string = string.gsub("\xc3\xbc", "&#252;") # uuml
-  string = string.gsub("\xc3\xa8", "&#232;") # egrave
-  
-  string.strip
+  def initialize(app_name)
+    @app = Appscript.app(app_name)
+    @slides = []
+  end
+
+  def ingest!
+    app.slideshows.get.first.slides.get.each do |s|
+      slide = Slide.new(s.notes.get)
+      @slides << slide
+    end
+  end
 end
 
-def create_breaks_around(text)
-  "<p>#{text.gsub(/\n/, "</p>\n\n<p>")}</p>"
+class Slide
+  attr_reader :raw_text, :formatted_notes
+  def initialize(raw)
+    @raw_text = raw
+    @formatted_notes = process_raw
+  end
+
+  def process_raw
+    o = Slide.create_breaks_around(Slide.make_ascii(@raw_text))
+    o = Slide.tidy(o)
+  end
+
+  def self.create_breaks_around(text)
+    "<p>#{text.gsub(/\n/, "</p>\n\n<p>")}</p>"
+  end
+
+  def self.tidy(text)
+    text.gsub("<p></p>", "").gsub("\n\n\n", "\n")
+  end
+
+  def self.make_ascii(string)
+    string = string.force_encoding('ASCII-8BIT')
+    string = string.gsub("\r", "\n")
+
+    string = string.gsub("\xe2\x80\x94", "--") # m dash
+    string = string.gsub("\xe2\x80\x98", "'")  # open single quote
+    string = string.gsub("\xe2\x80\x99", "'")  # close single quote
+    string = string.gsub("\xe2\x80\x9c", '"')  # open double quote
+    string = string.gsub("\xe2\x80\x9d", '"')  # close double quote
+
+    string = string.gsub("\xc3\xa1", "&#225;") # aacute
+    string = string.gsub("\xc3\x87", "&#199;") # Ccedil
+    string = string.gsub("\xc3\xb6", "&#246;") # ouml
+    string = string.gsub("\xc3\xbc", "&#252;") # uuml
+    string = string.gsub("\xc3\xa8", "&#232;") # egrave
+
+    string.strip
+  end
 end
 
-def tidy(text)
-  text.gsub("<p></p>", "").gsub("\n\n\n", "\n")
+class SlideTemplater
+  attr_reader :slide_template, :page_template_string, :shortname
+
+  def initialize(slide_template_string, page_template_string, shortname)
+    @slide_template = slide_template_string
+    @page_template = page_template_string
+    @shortname = shortname
+  end
+
+  def process_keynote(keynote_obj)
+    process_page(keynote_obj)
+  end
+
+  def process_slides(keynote_obj)
+    # take the keynote obj, template up each slide, stick them in an array.
+    output = []
+    eruby = Erubis::Eruby.new(@slide_template)
+    keynote_obj.slides.each_with_index do |s, i|
+      notes = s.formatted_notes
+      index = i
+      shortname = @shortname
+      templated = eruby.result(:notes => s.formatted_notes,
+                               :index => i,
+                               :shortname => @shortname)
+      output << templated 
+    end
+    # return the entire html
+    output
+  end
+
+  def process_page(keynote_obj)
+    output = ""
+    all_slides = process_slides(keynote_obj).join("\n")
+    eruby = Erubis::Eruby.new(@page_template)
+    eruby.result(:all_slides => all_slides)
+  end
 end
 
 shortname = ARGV[0]
-template = ARGV[1]
-aspect_ratio = ARGV[2]
+slide_template = ARGV[1]
+page_template = ARGV[2]
+aspect_ratio = ARGV[3]
 
-unless shortname && template
-  puts "Usage: keynote_dump.rb shortname_for_slides template_file [imagemagick_resize_ratio]"
+unless shortname && slide_template && page_template
+  puts "Usage: keynote_dump.rb shortname_for_slides slide_template_file page_template_file [imagemagick_resize_ratio]"
   puts "Optional resize ratio should be of the format (eg) 300x225"
   exit
 end
@@ -60,22 +130,13 @@ if aspect_ratio
 end
 
 puts "Exporting notes from Keynote"
-keynote = app("Keynote")
-@notes = []
 
-keynote.slideshows.get.first.slides.get.each do |slide|
-  output = make_ascii(slide.notes.get)
-  output = create_breaks_around(output)
-  output = tidy(output)
-  @notes << output
-  print "."
-end
-puts
-template = File.open(template) {|f| f.read }
+keynote = KeynoteProcessor.new('Keynote')
+keynote.ingest!
 
-output = ERB.new(template)
+kt = SlideTemplater.new(File.read(slide_template), File.read(page_template), shortname)
 
 File.open("#{shortname}/#{shortname}.html", "w") do |f|
-  f << output.result
+  f << kt.process_keynote(keynote)
 end
 
