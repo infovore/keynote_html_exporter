@@ -79,14 +79,14 @@ class SlideTemplater
   def process_slides(keynote_obj)
     # take the keynote obj, template up each slide, stick them in an array.
     output = []
-    eruby = Erubis::Eruby.new(@slide_template)
     keynote_obj.slides.each_with_index do |s, i|
+      eruby = Erubis::Eruby.new(@slide_template)
       notes = s.formatted_notes
       index = i
       shortname = @shortname
-      templated = eruby.result(:notes => s.formatted_notes,
-                               :index => i,
-                               :shortname => @shortname)
+      templated = eruby.evaluate(:notes => s.formatted_notes,
+                                 :index => i,
+                                 :shortname => @shortname)
       output << templated 
     end
     # return the entire html
@@ -94,10 +94,9 @@ class SlideTemplater
   end
 
   def process_page(keynote_obj)
-    output = ""
     all_slides = process_slides(keynote_obj).join("\n")
     eruby = Erubis::Eruby.new(@page_template)
-    eruby.result(:all_slides => all_slides)
+    eruby.evaluate(:all_slides => all_slides)
   end
 end
 
