@@ -15,6 +15,17 @@ unless shortname && slide_template && page_template
   exit
 end
 
+puts "Exporting notes from Keynote"
+
+keynote = KeynoteProcessor.new('Keynote')
+keynote.ingest!
+
+kt = SlideTemplater.new(File.read(slide_template), File.read(page_template), shortname)
+
+File.open("#{shortname}/#{shortname}.html", "w") do |f|
+  f << kt.process_keynote(keynote)
+end
+
 if aspect_ratio
   begin
     puts "Resizing all slides in #{shortname}/img"
@@ -28,16 +39,5 @@ if aspect_ratio
   rescue
     puts "Invalid resizing format. Slides will not be resized"
   end
-end
-
-puts "Exporting notes from Keynote"
-
-keynote = KeynoteProcessor.new('Keynote')
-keynote.ingest!
-
-kt = SlideTemplater.new(File.read(slide_template), File.read(page_template), shortname)
-
-File.open("#{shortname}/#{shortname}.html", "w") do |f|
-  f << kt.process_keynote(keynote)
 end
 
