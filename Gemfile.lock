@@ -1,0 +1,18 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    erubis (2.7.0)
+    iconv (1.0.3)
+    mini_magick (3.6.0)
+      subexec (~> 0.2.1)
+    rb-appscript (0.6.1)
+    subexec (0.2.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  erubis
+  iconv
+  mini_magick
+  rb-appscript

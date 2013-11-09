@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby 
 
 STDOUT.sync = true
-require 'rubygems'
-require 'erubis'
-require 'appscript'
-require 'iconv'
+require "rubygems"
+require "bundler/setup"
+Bundler.require(:default)
 
 class KeynoteProcessor
   include Appscript
