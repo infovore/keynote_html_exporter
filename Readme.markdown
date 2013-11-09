@@ -1,17 +1,18 @@
 keynote_dump.rb
 ===============
 
-keynote_dump.rb is a script to quickly and dynamically export Keynote presentations - and, specifically, the notes on each slide - to templated HTML pages. It exports one presentation to one page (at the moment).
+`keynote_dump.rb` is a script to quickly and dynamically export Keynote presentations - and, specifically, the notes on each slide - to templated HTML pages. It exports one presentation to one page (at the moment).
 
 Dependencies
 ------------
 
-keynote_dump.rb requires rb-appscript [http://appscript.sourceforge.net/rb-appscript/index.html] to talk to Keynote, and uses Erubis [http://www.kuwata-lab.com/erubis/] for its templating.
+Dependencies are handled via bundler. `bundle` should install everything you need. If you'd like more details:
 
-In addition, if you wish to dynamically resize slide images, you'll need Minimagick and RMagick [https://github.com/minimagick/minimagick] installed.
+keynote_dump.rb uses rb-appscript [http://appscript.sourceforge.net/rb-appscript/index.html] to talk to Keynote, and uses Erubis [http://www.kuwata-lab.com/erubis/] for its templating.
 
-Note that keynote_dump.rb is for **Keynote '09**; it has **not** been verified to work with Keynote 2013; given the commentary on Applescript support for Keynote 2013, it feels unlikely it'll work.
+In addition, if you wish to dynamically resize slide images, Minimagick/RMagick [https://github.com/minimagick/minimagick] are used.
 
+Note that `keynote_dump.rb` is for **Keynote '09**; it has **not** been verified to work with Keynote 2013; given the commentary on Applescript support for Keynote 2013, it feels unlikely it'll work.
 
 Usage
 -----
@@ -41,6 +42,6 @@ Firstly, to **just export the slides to an HTML template**
 4. Open Keynote, and make sure the presentation you wish to export is the only presentation open.
 5. Go to File->Export...
 6. Choose "Images", "All", "PNG", and click "Next"
-7. Navigate to the `my_presentation` directory you created. Enter `my_presentation` as the name to Save As. This will output a series of PNGs with names like `my_presentation.001.png` to `my_presentation/`
+7. Navigate to the `my_presentation` directory you created. Create a new folder called `img` and enter that. Enter `my_presentation` as the name to Save As. This will output a series of PNGs with names like `my_presentation.001.png` to `my_presentation/`
 8. Open terminal, navigate to your keynote_dump.rb directory, and run `ruby keynote_dump.rb my_presentation sample-template.html.erb 300x225`, substituting your template file's name, and the `width`x`height` you would like your slides to be resized to. (Valid `mogrify` aspect ratios, such as `500x`, will also work).
 9. When the script has completed, your presentation page will be at `my_presentation/my_presentation.html`; all the slides in that directory will be resized.
