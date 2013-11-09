@@ -112,18 +112,19 @@ unless shortname && slide_template && page_template
 end
 
 if aspect_ratio
-  require 'rmagick'
-  include Magick
+  require 'mini_magick'
   width = aspect_ratio.split("x").first.to_i
   height = aspect_ratio.split("x").last.to_i
-  if width && height
-    puts "Resizing all slides in #{shortname}/"
-    Dir.glob("#{shortname}/*.png") do |file|
-      ImageList.new(file).resize(width,height).write(file)
+  begin
+    puts "Resizing all slides in #{shortname}/img"
+    Dir.glob("#{shortname}/img/*.png") do |file|
+      image = MiniMagick::Image.open(file)
+      image.resize aspect_ratio
+      image.write(file)
       print "."
     end
     puts 
-  else
+  rescue
     puts "Invalid resizing format. Slides will not be resized"
   end
 end
