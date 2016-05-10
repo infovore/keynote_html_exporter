@@ -19,7 +19,7 @@ Usage
 
 From your commandline:
 
-keynote_dump.rb shortname_for_slides slide_template_file page_template_file [imagemagick_resize_ratio]
+	keynote_dump.rb shortname_for_slides slide_template_file page_template_file [imagemagick_resize_ratio]
 
 ...which is a bit cryptic. It's best explained with a walkthrough.
 
